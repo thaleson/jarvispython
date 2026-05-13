@@ -9,9 +9,13 @@ class CommandRegistry:
             GetTimeExecutor(),
         ]
 
-    def execute(self, command: str) -> str:
+    def execute(self, command: str) -> dict:
         for executor in self.executors:
             if executor.can_execute(command):
                 return executor.execute()
 
-        return "unknown_command"
+        return {
+            "success": False,
+            "action": "unknown_command",
+            "message": "Ainda não sei executar esse comando.",
+        }

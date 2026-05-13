@@ -7,5 +7,5 @@ class BaseExecutor(ABC):
         pass
 
     @abstractmethod
-    def execute(self) -> str:
+    def execute(self) -> dict:
         pass

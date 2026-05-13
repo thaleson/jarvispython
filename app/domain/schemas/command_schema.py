@@ -8,3 +8,4 @@ class CommandRequest(BaseModel):
 class CommandResponse(BaseModel):
     success: bool
     action: str
+    message: str

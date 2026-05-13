@@ -16,10 +16,6 @@ router = APIRouter(
 async def process_command(
     payload: CommandRequest,
 ):
+    result = CommandService.process_command(payload.command)
 
-    action = CommandService.process_command(payload.command)
-
-    return CommandResponse(
-        success=True,
-        action=action,
-    )
+    return CommandResponse(**result)

@@ -7,5 +7,11 @@ class GetTimeExecutor(BaseExecutor):
     def can_execute(self, command: str) -> bool:
         return "hora" in command.lower()
 
-    def execute(self) -> str:
-        return datetime.now().strftime("%H:%M")
+    def execute(self) -> dict:
+        current_time = datetime.now().strftime("%H:%M")
+
+        return {
+            "success": True,
+            "action": "get_time",
+            "message": f"Agora são {current_time}.",
+        }
