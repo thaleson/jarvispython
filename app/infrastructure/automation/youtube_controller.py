@@ -13,6 +13,9 @@ class YoutubeController:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(
                 headless=False,
+                args=[
+                    "--autoplay-policy=no-user-gesture-required",
+                ],
             )
 
             page = browser.new_page()
@@ -30,20 +33,32 @@ class YoutubeController:
             page.keyboard.press("Enter")
 
             page.wait_for_selector(
-                "ytd-video-renderer",
-                timeout=15000,
+                "ytd-video-renderer a#thumbnail",
+                timeout=20000,
             )
 
-            first_video = page.locator("ytd-video-renderer").first
+            first_video = page.locator("ytd-video-renderer a#thumbnail").first
 
             first_video.click()
 
+            page.wait_for_selector(
+                "#movie_player video",
+                timeout=20000,
+            )
+
+            page.wait_for_timeout(2000)
+
+            main_video = page.locator("#movie_player video").first
+
+            main_video.evaluate("video => video.play()")
+
             logger.info("YouTube video started. Keeping browser open.")
 
-            while True:
-                page.wait_for_timeout(
-                    1000,
-                )
+            page.wait_for_timeout(
+                300000,
+            )
+
+            browser.close()
 
     @classmethod
     def search_and_play(

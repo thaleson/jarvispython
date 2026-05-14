@@ -5,31 +5,38 @@ from app.infrastructure.automation.youtube_controller import YoutubeController
 class SearchYoutubeExecutor(BaseExecutor):
     def can_execute(
         self,
-        command: str,
+        command: dict,
     ) -> bool:
-        normalized_command = command.lower()
-
-        return "youtube" in normalized_command
+        return True
 
     def execute(
         self,
-        command: str,
+        command: dict,
     ) -> dict:
-        search_query = (
-            command.lower()
-            .replace("youtube", "")
-            .replace("música", "")
-            .replace("musica", "")
-            .replace("toque", "")
-            .replace("coloque", "")
-            .replace("bota", "")
-            .strip()
-        )
+        query = command.get("query")
 
-        YoutubeController.search_and_play(search_query)
+        if not query:
+            parameters = command.get(
+                "parameters",
+                {},
+            )
+
+            query = parameters.get(
+                "query",
+                "",
+            )
+
+        if not query:
+            return {
+                "success": False,
+                "action": "search_youtube",
+                "message": "Não encontrei o termo para pesquisar no YouTube.",
+            }
+
+        YoutubeController.search_and_play(query)
 
         return {
             "success": True,
             "action": "search_youtube",
-            "message": (f"Tocando '{search_query}' " "no YouTube."),
+            "message": (f"Tocando '{query}' " "no YouTube."),
         }

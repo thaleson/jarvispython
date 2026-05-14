@@ -8,7 +8,7 @@ class AudioTranscriber:
         logger.info("Loading Whisper model...")
 
         self.model = WhisperModel(
-            "base",
+            "small",
             device="cpu",
             compute_type="int8",
         )
