@@ -7,7 +7,8 @@ class GetTimeExecutor(BaseExecutor):
     def can_execute(self, command: str) -> bool:
         return "hora" in command.lower()
 
-    def execute(self) -> dict:
+    def execute(self, command: str) -> dict:
+
         current_time = datetime.now().strftime("%H:%M")
 
         return {

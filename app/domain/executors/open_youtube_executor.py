@@ -6,7 +6,8 @@ class OpenYoutubeExecutor(BaseExecutor):
     def can_execute(self, command: str) -> bool:
         return "youtube" in command.lower()
 
-    def execute(self) -> dict:
+    def execute(self, command: str) -> dict:
+
         BrowserController.open_youtube()
 
         return {
