@@ -1,5 +1,6 @@
 from fastapi import APIRouter, File, UploadFile
 
+from app.domain.schemas.voice_schema import VoiceResponse
 from app.services.voice_service import VoiceService
 
 router = APIRouter(
@@ -8,14 +9,20 @@ router = APIRouter(
 )
 
 
-@router.post("/record")
+@router.post(
+    "/record",
+    response_model=VoiceResponse,
+)
 async def record_voice():
     return VoiceService.record_and_execute(
         duration=5,
     )
 
 
-@router.post("/upload")
+@router.post(
+    "/upload",
+    response_model=VoiceResponse,
+)
 async def upload_voice(
     audio_file: UploadFile = File(...),
 ):
