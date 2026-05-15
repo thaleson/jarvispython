@@ -3,6 +3,7 @@ from pathlib import Path
 import sounddevice as sd
 from scipy.io.wavfile import write
 
+from app.core.config import settings
 from app.core.logger import logger
 
 
@@ -12,18 +13,23 @@ class MicrophoneRecorder:
     @classmethod
     def record(
         cls,
-        duration: int = 5,
-        output_path: str = "temp_audio/input.wav",
+        duration=None,
+        output_path=None,
     ) -> str:
-        Path("temp_audio").mkdir(
+
+        duration = duration or settings.VOICE_RECORD_DURATION
+
+        output_path = output_path or "temp_audio/input.wav"
+
+        Path(settings.TEMP_AUDIO_DIR).mkdir(
             exist_ok=True,
         )
 
-        logger.info(f"Recording audio for {duration} seconds...")
+        logger.info(f"Recording audio for " f"{duration} seconds...")
 
         audio = sd.rec(
             int(duration * cls.SAMPLE_RATE),
-            samplerate=cls.SAMPLE_RATE,
+            samplerate=16000,
             channels=1,
             dtype="int16",
         )
@@ -36,6 +42,6 @@ class MicrophoneRecorder:
             audio,
         )
 
-        logger.info(f"Audio saved at: {output_path}")
+        logger.info(f"Audio saved at: " f"{output_path}")
 
         return output_path

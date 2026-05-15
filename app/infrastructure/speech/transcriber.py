@@ -1,5 +1,6 @@
 from faster_whisper import WhisperModel
 
+from app.core.config import settings
 from app.core.logger import logger
 
 
@@ -8,9 +9,9 @@ class AudioTranscriber:
         logger.info("Loading Whisper model...")
 
         self.model = WhisperModel(
-            "small",
-            device="cpu",
-            compute_type="int8",
+            settings.WHISPER_MODEL,
+            device=settings.WHISPER_DEVICE,
+            compute_type=(settings.WHISPER_COMPUTE_TYPE),
         )
 
     def transcribe(
