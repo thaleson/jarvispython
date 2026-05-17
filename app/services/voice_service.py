@@ -4,8 +4,12 @@ from uuid import uuid4
 from fastapi import UploadFile
 
 from app.infrastructure.speech.microphone_recorder import MicrophoneRecorder
+from app.infrastructure.speech.piper_tts_engine import PiperTTSEngine
 from app.infrastructure.speech.transcriber import AudioTranscriber
 from app.services.command_service import CommandService
+from app.services.conversation_service import ConversationService
+from app.services.intent_service import IntentService
+from app.services.response_service import ResponseService
 
 
 class VoiceService:
@@ -30,9 +34,7 @@ class VoiceService:
         )
 
         file_name = audio_file.filename or "audio.wav"
-
         file_extension = Path(file_name).suffix or ".wav"
-
         audio_path = f"temp_audio/{uuid4()}{file_extension}"
 
         content = await audio_file.read()
@@ -54,13 +56,48 @@ class VoiceService:
             audio_path,
         )
 
+        intent = IntentService.detect_intent(
+            text,
+        )
+
+        if intent.get("action") == "conversation":
+            conversation_response = ConversationService.generate_response(
+                intent.get("query", text),
+            )
+
+            tts = PiperTTSEngine()
+            tts.speak(
+                conversation_response,
+            )
+
+            return {
+                "success": True,
+                "transcription": text,
+                "action": "conversation",
+                "message": conversation_response,
+            }
+
         result = CommandService.process_command(
             text,
         )
+
+        message = result.get("message")
+
+        spoken_response = ResponseService.generate_spoken_response(
+            action=result.get("action"),
+            message=message,
+            query=result.get("query"),
+        )
+
+        if spoken_response:
+            tts = PiperTTSEngine()
+            tts.speak(
+                spoken_response,
+            )
 
         return {
             "success": result.get("success", False),
             "transcription": text,
             "action": result.get("action"),
-            "message": result.get("message"),
+            "message": message,
         }
