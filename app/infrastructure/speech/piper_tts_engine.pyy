@@ -7,7 +7,7 @@ from app.core.logger import logger
 
 
 class PiperTTSEngine:
-    PIPER_BINARY = "/home/thaleson/piper/piper/piper"
+    PIPER_BINARY = "/home/thaleson/piper/" "piper/piper"
 
     PIPER_MODEL = "/home/thaleson/piper/piper/" "pt_BR-faber-medium.onnx"
 
@@ -17,22 +17,27 @@ class PiperTTSEngine:
         self,
         text: str,
     ) -> None:
-        output_dir = Path(
+        Path(
             self.OUTPUT_DIR,
-        )
-
-        output_dir.mkdir(
+        ).mkdir(
             exist_ok=True,
         )
 
-        raw_output_path = str(output_dir / f"jarvis_raw_{uuid4()}.wav")
-
-        final_output_path = str(output_dir / f"jarvis_response_{uuid4()}.wav")
-
-        logger.info(
-            "Piper speaking: %s",
-            text,
+        raw_output_path = (
+        f"{self.OUTPUT_DIR}/"
+        f"jarvis_raw_"
+        f"{uuid4()}.wav"
         )
+
+        raw_output_path = (
+        f"{self.OUTPUT_DIR}/"
+        f"jarvis_raw_"
+        f"{uuid4()}.wav"
+        )
+
+        message = f"Piper speaking: " f"{text}"
+
+        logger.info(message)
 
         subprocess.run(
             [
