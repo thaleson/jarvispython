@@ -5,14 +5,19 @@ from app.core.logger import logger
 
 
 class AudioTranscriber:
-    def __init__(self):
-        logger.info("Loading Whisper model...")
+    _model = None
 
-        self.model = WhisperModel(
-            settings.WHISPER_MODEL,
-            device=settings.WHISPER_DEVICE,
-            compute_type=(settings.WHISPER_COMPUTE_TYPE),
-        )
+    def __init__(self):
+        if AudioTranscriber._model is None:
+            logger.info("Loading Whisper model...")
+
+            AudioTranscriber._model = WhisperModel(
+                settings.WHISPER_MODEL,
+                device=settings.WHISPER_DEVICE,
+                compute_type=settings.WHISPER_COMPUTE_TYPE,
+            )
+
+        self.model = AudioTranscriber._model
 
     def transcribe(
         self,
