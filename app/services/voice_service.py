@@ -3,9 +3,9 @@ from uuid import uuid4
 
 from fastapi import UploadFile
 
-from app.infrastructure.speech.microphone_recorder import MicrophoneRecorder
 from app.infrastructure.speech.piper_tts_engine import PiperTTSEngine
 from app.infrastructure.speech.transcriber import AudioTranscriber
+from app.infrastructure.speech.vad_recorder import VADRecorder
 from app.services.command_service import CommandService
 from app.services.conversation_service import ConversationService
 from app.services.intent_service import IntentService
@@ -17,9 +17,7 @@ class VoiceService:
     def record_and_execute(
         duration: int = 5,
     ) -> dict:
-        audio_path = MicrophoneRecorder.record(
-            duration=duration,
-        )
+        audio_path = VADRecorder.record()
 
         return VoiceService.transcribe_and_execute(
             audio_path=audio_path,
