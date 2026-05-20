@@ -13,10 +13,10 @@ class PiperTTSEngine:
 
     OUTPUT_DIR = "temp_audio"
 
-    def speak(
+    def synthesize_to_file(
         self,
         text: str,
-    ) -> None:
+    ) -> str:
         output_dir = Path(
             self.OUTPUT_DIR,
         )
@@ -25,12 +25,16 @@ class PiperTTSEngine:
             exist_ok=True,
         )
 
-        raw_output_path = str(output_dir / f"jarvis_raw_{uuid4()}.wav")
+        raw_output_path = str(
+            output_dir / f"jarvis_raw_{uuid4()}.wav",
+        )
 
-        final_output_path = str(output_dir / f"jarvis_response_{uuid4()}.wav")
+        final_output_path = str(
+            output_dir / f"jarvis_response_{uuid4()}.wav",
+        )
 
         logger.info(
-            "Piper speaking: %s",
+            "Piper synthesizing: %s",
             text,
         )
 
@@ -79,22 +83,36 @@ class PiperTTSEngine:
                 ],
                 check=True,
             )
-
-            subprocess.run(
-                [
-                    "ffplay",
-                    "-nodisp",
-                    "-autoexit",
-                    "-loglevel",
-                    "quiet",
-                    final_output_path,
-                ],
-                check=True,
-            )
         finally:
-            for file_path in [
-                raw_output_path,
-                final_output_path,
-            ]:
-                if os.path.exists(file_path):
-                    os.remove(file_path)
+            if os.path.exists(raw_output_path):
+                os.remove(raw_output_path)
+
+        return final_output_path
+
+    def play_file(
+        self,
+        audio_path: str,
+    ) -> None:
+        subprocess.run(
+            [
+                "ffplay",
+                "-nodisp",
+                "-autoexit",
+                "-loglevel",
+                "quiet",
+                audio_path,
+            ],
+            check=True,
+        )
+
+    def speak(
+        self,
+        text: str,
+    ) -> None:
+        audio_path = self.synthesize_to_file(text)
+
+        try:
+            self.play_file(audio_path)
+        finally:
+            if os.path.exists(audio_path):
+                os.remove(audio_path)
