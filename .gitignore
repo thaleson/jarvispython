@@ -16,3 +16,4 @@ temp_audio/
 .venv/
 __pycache__/
 .pytest_cache/
+.agents/
