@@ -66,34 +66,35 @@ class PiperTTSEngine:
             "volume=1.4"
         )
 
-        subprocess.run(
-            [
-                "ffmpeg",
-                "-y",
-                "-i",
+        try:
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-y",
+                    "-i",
+                    raw_output_path,
+                    "-af",
+                    ffmpeg_filter,
+                    final_output_path,
+                ],
+                check=True,
+            )
+
+            subprocess.run(
+                [
+                    "ffplay",
+                    "-nodisp",
+                    "-autoexit",
+                    "-loglevel",
+                    "quiet",
+                    final_output_path,
+                ],
+                check=True,
+            )
+        finally:
+            for file_path in [
                 raw_output_path,
-                "-af",
-                ffmpeg_filter,
                 final_output_path,
-            ],
-            check=True,
-        )
-
-        subprocess.run(
-            [
-                "ffplay",
-                "-nodisp",
-                "-autoexit",
-                "-loglevel",
-                "quiet",
-                final_output_path,
-            ],
-            check=True,
-        )
-
-        for file_path in [
-            raw_output_path,
-            final_output_path,
-        ]:
-            if os.path.exists(file_path):
-                os.remove(file_path)
+            ]:
+                if os.path.exists(file_path):
+                    os.remove(file_path)

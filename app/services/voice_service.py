@@ -40,9 +40,14 @@ class VoiceService:
         with open(audio_path, "wb") as file:
             file.write(content)
 
-        return VoiceService.transcribe_and_execute(
-            audio_path=audio_path,
-        )
+        try:
+            return VoiceService.transcribe_and_execute(
+                audio_path=audio_path,
+            )
+        finally:
+            Path(audio_path).unlink(
+                missing_ok=True,
+            )
 
     @staticmethod
     def transcribe_and_execute(

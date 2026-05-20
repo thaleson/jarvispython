@@ -11,10 +11,14 @@ class VADRecorder:
     @staticmethod
     def record(
         output_path: str = "temp_audio/input.wav",
+        max_duration: int = 30,
     ) -> str:
         sample_rate = 16000
         frame_duration = 30
         frame_size = int(sample_rate * frame_duration / 1000)
+        max_frames = int(
+            max_duration * sample_rate / frame_size,
+        )
 
         vad = webrtcvad.Vad(2)
 
@@ -23,6 +27,7 @@ class VADRecorder:
         recording = []
         silence_frames = 0
         speech_detected = False
+        total_frames = 0
 
         silence_limit = 25
 
@@ -33,8 +38,9 @@ class VADRecorder:
             blocksize=frame_size,
         ) as stream:
 
-            while True:
+            while total_frames < max_frames:
                 audio_chunk, _ = stream.read(frame_size)
+                total_frames += 1
 
                 audio_bytes = audio_chunk.tobytes()
 
@@ -59,6 +65,12 @@ class VADRecorder:
                     break
 
         logger.info("Speech finished.")
+
+        if not recording:
+            logger.warning("No speech detected.")
+            raise RuntimeError(
+                "No speech detected during recording.",
+            )
 
         audio_data = np.concatenate(
             recording,
