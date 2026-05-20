@@ -12,3 +12,7 @@ build/
 .idea/
 temp_audio/temp_audio/
 temp_audio/
+temp_audio/
+.venv/
+__pycache__/
+.pytest_cache/
